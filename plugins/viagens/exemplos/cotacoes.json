@@ -1,0 +1,39 @@
+{
+  "_nota": "Valores ILUSTRATIVOS para demonstrar o formato. Não são cotações reais.",
+  "viajantes": 2,
+  "trechos": [
+    {
+      "id": "T1", "de": "São Paulo", "para": "Rio de Janeiro", "data": "2026-12-18",
+      "aviao":  {"preco_por_pessoa": 420, "extras_por_pessoa": 80, "duracao_h": 4.0, "fonte": "exemplo", "estimado": true},
+      "onibus": {"preco_por_pessoa": 150, "duracao_h": 6.5, "fonte": "exemplo", "estimado": true},
+      "carro":  {"distancia_km": 435, "duracao_h": 6.0, "pedagio": 90, "fonte": "exemplo", "estimado": true}
+    },
+    {
+      "id": "T2", "de": "Rio de Janeiro", "para": "Paraty", "data": "2026-12-21",
+      "onibus": {"preco_por_pessoa": 110, "duracao_h": 4.5, "fonte": "exemplo", "estimado": true},
+      "carro":  {"distancia_km": 250, "duracao_h": 4.0, "pedagio": 0, "fonte": "exemplo", "estimado": true}
+    },
+    {
+      "id": "T3", "de": "Paraty", "para": "São Paulo", "data": "2026-12-24",
+      "onibus": {"preco_por_pessoa": 170, "duracao_h": 6.0, "fonte": "exemplo", "estimado": true},
+      "carro":  {"distancia_km": 305, "duracao_h": 5.0, "pedagio": 40, "fonte": "exemplo", "estimado": true}
+    }
+  ],
+  "aluguel_carro": {
+    "diaria": 150, "dias": 7, "taxas": 120,
+    "consumo_km_l": 11, "preco_combustivel": 6.3, "estacionamento_dia": 25,
+    "fonte": "exemplo", "estimado": true
+  },
+  "estadias": [
+    {
+      "id": "H1", "cidade": "Rio de Janeiro", "checkin": "2026-12-18", "checkout": "2026-12-21", "noites": 3,
+      "airbnb":  {"preco_total": 1350, "nome": "exemplo", "estimado": true},
+      "booking": {"preco_total": 1500, "nome": "exemplo", "estimado": true}
+    },
+    {
+      "id": "H2", "cidade": "Paraty", "checkin": "2026-12-21", "checkout": "2026-12-24", "noites": 3,
+      "airbnb":  {"preco_total": 1100, "nome": "exemplo", "estimado": true},
+      "booking": {"preco_total": 980, "nome": "exemplo", "estimado": true}
+    }
+  ]
+}

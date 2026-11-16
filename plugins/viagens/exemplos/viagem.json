@@ -1,0 +1,10 @@
+{
+  "origem": "São Paulo",
+  "data_inicio": "2026-12-18",
+  "dias": 7,
+  "viajantes": 2,
+  "destinos": [
+    {"cidade": "Rio de Janeiro"},
+    {"cidade": "Paraty"}
+  ]
+}

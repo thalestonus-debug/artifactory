@@ -1,0 +1,16 @@
+{
+  "name": "artifactory",
+  "owner": { "name": "thalestonus-debug" },
+  "metadata": {
+    "description": "Catálogo de plugins e skills do Claude organizados por frente de trabalho."
+  },
+  "plugins": [
+    {
+      "name": "viagens",
+      "source": "./plugins/viagens",
+      "description": "Planejamento de viagens: a partir de dias e locais, cota avião, ônibus e carro alugado, Airbnb e Booking, e compara cenários.",
+      "version": "0.1.0",
+      "category": "pessoal"
+    }
+  ]
+}
