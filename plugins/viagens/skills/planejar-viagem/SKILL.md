@@ -46,6 +46,19 @@ Exemplo de entrada: `../../exemplos/viagem.json`. A saída tem `trechos` (T1, T2
 `estadias` (H1, H2…) com datas. Se fizer sentido, acrescente ao `plano.json` os
 códigos `iata` e `uf` das cidades — melhora os links gerados nas próximas etapas.
 
+### Horários
+
+Com os horários de saída de cada trecho, calcule as chegadas (o script soma 20% ao tempo do
+roteador para paradas e trânsito e avisa chegadas de madrugada):
+
+```bash
+python3 <pasta-desta-skill>/scripts/horarios.py agenda.json
+```
+
+Respeite as restrições do grupo (ex.: dia de trabalho em que ninguém dirige no horário
+comercial). Se uma data de chegada só for possível dirigindo mais de ~14 h seguidas ou a noite
+toda, mostre a alternativa mais segura e quanto ela muda no custo.
+
 ## 3. Cotar
 
 1. Siga a skill **cotar-transporte** para cada trecho (avião, ônibus) e para o carro alugado.

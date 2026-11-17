@@ -9,7 +9,7 @@
       "name": "viagens",
       "source": "./plugins/viagens",
       "description": "Planejamento de viagens: a partir de dias e locais, cota avião, ônibus e carro alugado, Airbnb e Booking, e compara cenários.",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "category": "pessoal"
     }
   ]

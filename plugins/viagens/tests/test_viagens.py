@@ -183,3 +183,17 @@ class TestEscolher(unittest.TestCase):
         })
         self.assertEqual([a["nome"] for a in r["recomendados"]], ["b", "a", "c"])  # teto = 115 × 1,2 = 138
         self.assertEqual(r["recomendados"][0]["vs_mediana_pct"], 0)
+
+
+hor = carregar("planejar-viagem/scripts/horarios.py")
+
+
+class TestHorarios(unittest.TestCase):
+    def test_chegada_com_fator_e_avisos(self):
+        r = hor.calcular({"fator": 1.2, "trechos": [
+            {"id": "T1", "para": "BH", "saida": "2027-01-28T19:00", "duracao_h": 7.9},
+            {"id": "T2", "para": "VdC", "saida": "2027-01-29T03:00", "duracao_h": 1},
+        ]})
+        self.assertEqual(r["trechos"][0]["chegada"], "2027-01-29T04:30")  # 9,48 h → arredonda p/ 5 min
+        self.assertEqual(r["trechos"][0]["chegada_txt"], "sex 29/01 04:30")
+        self.assertEqual(len(r["avisos"]), 3)  # madrugada T1, T2 sai antes de chegar, madrugada T2

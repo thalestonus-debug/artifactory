@@ -51,6 +51,12 @@ python3 <pasta-desta-skill>/scripts/escolher.py anuncios.json
 Anúncios sem avaliação saem separados em `sem_historico`. Eles podem ser baratos, mas em datas
 de alta procura (Carnaval, Réveillon) só valem com cancelamento grátis e endereço conferido.
 
+### Links dos anúncios: sempre conferir
+
+Ao ler uma página de busca, a associação entre anúncio e link (`/rooms/NÚMERO`) pode vir
+deslocada em uma posição. Antes de entregar um link, abra o anúncio e confira se o título bate.
+Entregue o link já com as datas: `https://www.airbnb.com.br/rooms/ID?check_in=AAAA-MM-DD&check_out=AAAA-MM-DD&adults=N`.
+
 ## 3. Formato no cotacoes.json
 
 ```json
