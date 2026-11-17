@@ -34,6 +34,23 @@ no relatório. O comparador mostra só as plataformas que têm preço.
 Se o usuário tiver preferências (quarto privativo, cozinha, piscina, pet), aplique os filtros
 e cite-os no relatório.
 
+### Preferências do grupo
+
+Pergunte (ou use estes padrões): bairros preferidos, bairros a evitar, se aceitam dividir
+quarto, e o teto de preço. Padrão: **até a mediana** dos anúncios da busca, nota ≥ 4,7 e
+nada em zona periférica. Em cidades desconhecidas pelo grupo, prefira centro ou orla.
+
+Para busca por bairro no Airbnb, o filtro por nome costuma não funcionar: use a área do mapa
+(`search_by_map=true&ne_lat=…&ne_lng=…&sw_lat=…&sw_lng=…`). Cole os anúncios lidos num JSON
+e rode o seletor, que calcula a mediana e ranqueia priorizando os bairros preferidos:
+
+```bash
+python3 <pasta-desta-skill>/scripts/escolher.py anuncios.json
+```
+
+Anúncios sem avaliação saem separados em `sem_historico`. Eles podem ser baratos, mas em datas
+de alta procura (Carnaval, Réveillon) só valem com cancelamento grátis e endereço conferido.
+
 ## 3. Formato no cotacoes.json
 
 ```json

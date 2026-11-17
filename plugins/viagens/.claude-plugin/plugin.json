@@ -1,6 +1,6 @@
 {
   "name": "viagens",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Planejamento de viagens: a partir de dias e locais, cota avião, ônibus e carro alugado, Airbnb e Booking, e compara cenários.",
   "author": { "name": "thalestonus-debug" },
   "keywords": ["viagem", "cotação", "passagens", "hospedagem", "airbnb", "booking"]

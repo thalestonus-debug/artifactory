@@ -147,3 +147,39 @@ class TestCasosReais(unittest.TestCase):
         self.assertIn("Carro próprio", md)
         self.assertNotIn("Ônibus", md)
         self.assertEqual(r["combinacoes"][0]["total"], 370)
+
+
+esc = carregar("cotar-hospedagem/scripts/escolher.py")
+
+
+class TestEscolher(unittest.TestCase):
+    def test_mediana_prioridade_e_sem_historico(self):
+        r = esc.escolher({
+            "preferencias": {"bairros_prioritarios": ["Graca"], "nota_min": 4.7, "avaliacoes_min": 10},
+            "anuncios": [
+                {"nome": "caro", "bairro": "Barra", "preco_total": 10000, "nota": 5, "avaliacoes": 50},
+                {"nome": "barra ok", "bairro": "Barra", "preco_total": 6000, "nota": 4.8, "avaliacoes": 60},
+                {"nome": "graca ok", "bairro": "Graça", "preco_total": 7000, "nota": 4.9, "avaliacoes": 30},
+                {"nome": "graca nova", "bairro": "Graça", "preco_total": 4600, "nota": None, "avaliacoes": 0},
+                {"nome": "nota baixa", "bairro": "Barra", "preco_total": 5000, "nota": 4.2, "avaliacoes": 40},
+                {"nome": "outra data", "bairro": "Graça", "preco_total": 100, "nota": 5, "avaliacoes": 99,
+                 "datas_exatas": False},
+                {"nome": "media", "bairro": "Barra", "preco_total": 8000, "nota": 4.9, "avaliacoes": 20},
+            ],
+        })
+        self.assertEqual(r["mediana"], 6500)  # ignora a de outra data
+        self.assertEqual([a["nome"] for a in r["recomendados"]], ["barra ok"])
+        self.assertEqual([a["nome"] for a in r["sem_historico"]], ["graca nova"])
+        self.assertEqual(r["descartados"], 4)
+
+    def test_teto_relativo_e_prioridade_primeiro(self):
+        r = esc.escolher({
+            "preferencias": {"bairros_prioritarios": ["Graça"], "teto_relativo_mediana": 1.2, "avaliacoes_min": 1},
+            "anuncios": [
+                {"nome": "a", "bairro": "Barra", "preco_total": 100, "nota": 5, "avaliacoes": 3},
+                {"nome": "b", "bairro": "graça", "preco_total": 115, "nota": 5, "avaliacoes": 3},
+                {"nome": "c", "bairro": "Barra", "preco_total": 120, "nota": 5, "avaliacoes": 3},
+            ],
+        })
+        self.assertEqual([a["nome"] for a in r["recomendados"]], ["b", "a", "c"])  # teto = 115 × 1,2 = 138
+        self.assertEqual(r["recomendados"][0]["vs_mediana_pct"], 0)

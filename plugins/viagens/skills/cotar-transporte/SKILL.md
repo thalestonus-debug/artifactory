@@ -46,6 +46,12 @@ sites das concessionárias. Preencha `carro` em **todos** os trechos.
 de `aluguel_carro`, e não precisa cotar avião nem ônibus se o grupo não quiser.
 Balsas e travessias entram no `pedagio` do trecho (cite na fonte).
 
+**Carro flex** — no etanol o carro faz cerca de 70% dos km/l da gasolina (confira a relação
+do modelo na tabela do Inmetro). O etanol compensa quando o preço dele fica abaixo dessa
+relação (por exemplo, abaixo de 71% do preço da gasolina). Use a paridade por estado da ANP e
+um preço médio ponderado pelos km rodados em cada estado. Diga ao usuário qual combustível
+assumiu e se o consumo que ele informou é de gasolina ou de etanol.
+
 **Distância e tempo sem Google Maps** — se não der para ler o Maps, o roteador público OSRM
 (`router.project-osrm.org`, dados do OpenStreetMap) devolve km e horas por API; as coordenadas
 saem do Nominatim (`nominatim.openstreetmap.org`). Os tempos são sem trânsito: avise o usuário.
