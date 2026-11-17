@@ -20,9 +20,19 @@ padrões e diga quais assumiu (sem travar a conversa com perguntas):
 | `data_inicio` | Próxima sexta-feira com pelo menos 30 dias de antecedência |
 | `viajantes` | 2 adultos |
 | `retornar_origem` | `true` |
+| `destino_final` | Use quando a viagem termina em outra cidade (ex.: começa em Salvador, termina em SP) |
 | noites por cidade | Divididas igualmente (o script faz isso) |
 
 Convenção: **N dias = N-1 noites** (chega no dia 1, volta no dia N).
+
+Se o grupo já está hospedado na cidade de origem (ex.: chega a Salvador e fica lá 6 noites),
+coloque a origem também como primeiro destino, com as noites dela: o script não cria trecho
+de uma cidade para ela mesma.
+
+**Confira feriados nas datas** (Carnaval, Semana Santa, Réveillon, feriados prolongados)
+logo no início. Eles mudam preço, mínimo de noites e trânsito, e devem aparecer em destaque
+no relatório. Quando a data de saída for flexível, compare os dois roteiros (ex.: sair um dia
+antes) com o mesmo processo.
 
 ## 2. Montar o plano
 

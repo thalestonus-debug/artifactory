@@ -112,3 +112,38 @@ class TestCenarios(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestCasosReais(unittest.TestCase):
+    """Casos que surgiram no uso real: viagem que termina em outra cidade e carro próprio."""
+
+    def test_destino_final_diferente_e_comeca_na_origem(self):
+        p = plano.montar_plano({
+            "origem": "Salvador", "data_inicio": "2027-01-30", "viajantes": 3,
+            "destino_final": "São Paulo",
+            "destinos": [{"cidade": "Salvador", "noites": 6}, {"cidade": "Itacaré", "noites": 2},
+                         {"cidade": "Caravelas", "noites": 1}],
+        })
+        self.assertEqual([(t["de"], t["para"], t["data"]) for t in p["trechos"]], [
+            ("Salvador", "Itacaré", "2027-02-05"),
+            ("Itacaré", "Caravelas", "2027-02-07"),
+            ("Caravelas", "São Paulo", "2027-02-08"),
+        ])
+        self.assertEqual(p["data_fim"], "2027-02-08")
+
+    def test_carro_proprio_sem_onibus_nem_aviao(self):
+        cot = {
+            "viajantes": 3,
+            "trechos": [{"id": "T1", "de": "A", "para": "B", "carro": {"distancia_km": 110, "pedagio": 10, "duracao_h": 2}}],
+            "carro_proprio": {"consumo_km_l": 11, "preco_combustivel": 6.0},
+            "estadias": [{"id": "H1", "cidade": "B", "noites": 1, "airbnb": {"preco_total": 300}}],
+        }
+        r = cen.calcular(cot)
+        self.assertEqual(list(r["transporte"]), ["carro"])
+        self.assertEqual(r["transporte_indisponivel"], {})
+        self.assertAlmostEqual(r["transporte"]["carro"]["total"], 60 + 10)
+        self.assertEqual(list(r["hospedagem"]), ["airbnb"])
+        md = cen.markdown(r)
+        self.assertIn("Carro próprio", md)
+        self.assertNotIn("Ônibus", md)
+        self.assertEqual(r["combinacoes"][0]["total"], 370)

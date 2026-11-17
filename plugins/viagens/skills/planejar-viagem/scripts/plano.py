@@ -9,6 +9,7 @@ Entrada: um JSON (arquivo ou stdin) no formato
       "dias": 7,                         # total de dias da viagem (opcional se cada destino tiver "noites")
       "viajantes": 2,
       "retornar_origem": true,           # padrão: true
+      "destino_final": "São Paulo",      # opcional: termina em outra cidade (ignora retornar_origem)
       "destinos": [
         {"cidade": "Rio de Janeiro"},    # sem "noites": divide automaticamente
         {"cidade": "Paraty", "noites": 2}
@@ -98,12 +99,13 @@ def montar_plano(spec: dict) -> dict:
         if n == 0:
             # Passa pela cidade sem dormir: não gera trecho separado nem estadia.
             continue
-        trechos.append({
-            "id": f"T{len(trechos) + 1}",
-            "de": atual,
-            "para": d["cidade"],
-            "data": dia.isoformat(),
-        })
+        if d["cidade"] != atual:  # começar hospedado na própria origem não gera trecho
+            trechos.append({
+                "id": f"T{len(trechos) + 1}",
+                "de": atual,
+                "para": d["cidade"],
+                "data": dia.isoformat(),
+            })
         saida = dia + timedelta(days=n)
         estadias.append({
             "id": f"H{len(estadias) + 1}",
@@ -117,11 +119,12 @@ def montar_plano(spec: dict) -> dict:
     if not estadias:
         raise ErroPlano("Nenhum destino ficou com noites > 0; aumente 'dias'.")
 
-    if retornar and atual != origem:
+    final = spec.get("destino_final") or (origem if retornar else None)
+    if final and atual != final:
         trechos.append({
             "id": f"T{len(trechos) + 1}",
             "de": atual,
-            "para": origem,
+            "para": final,
             "data": dia.isoformat(),
         })
 

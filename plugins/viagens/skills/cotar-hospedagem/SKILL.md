@@ -27,6 +27,10 @@ Para cada estadia, em cada plataforma, registre **uma opção representativa**:
   final, não a diária anunciada.
 - Nome, nota, link do anúncio e se tem cancelamento grátis.
 
+Se um site não puder ser lido (o Booking, por exemplo, monta a página só no navegador),
+**não estime preço**: entregue o link preenchido, deixe a plataforma sem cotação e diga isso
+no relatório. O comparador mostra só as plataformas que têm preço.
+
 Se o usuário tiver preferências (quarto privativo, cozinha, piscina, pet), aplique os filtros
 e cite-os no relatório.
 

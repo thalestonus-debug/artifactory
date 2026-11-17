@@ -41,6 +41,16 @@ sites das concessionárias. Preencha `carro` em **todos** os trechos.
   = média da gasolina na região (ANP) — marque como estimativa.
 - `estacionamento_dia` se os hotéis/cidades cobrarem.
 
+**Carro próprio** — se o grupo vai com o próprio carro, não cote aluguel: use o bloco
+`carro_proprio` (`consumo_km_l`, `preco_combustivel`, `estacionamento_dia` opcional) no lugar
+de `aluguel_carro`, e não precisa cotar avião nem ônibus se o grupo não quiser.
+Balsas e travessias entram no `pedagio` do trecho (cite na fonte).
+
+**Distância e tempo sem Google Maps** — se não der para ler o Maps, o roteador público OSRM
+(`router.project-osrm.org`, dados do OpenStreetMap) devolve km e horas por API; as coordenadas
+saem do Nominatim (`nominatim.openstreetmap.org`). Os tempos são sem trânsito: avise o usuário.
+Para trechos acima de ~900 km, proponha um pernoite que divida o caminho de forma equilibrada.
+
 ## 3. Formato no cotacoes.json
 
 ```json

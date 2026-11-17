@@ -8,6 +8,7 @@ Cenários de transporte:
   - aviao   : todos os trechos de avião (onde não houver voo, usa ônibus e avisa)
   - onibus  : todos os trechos de ônibus (onde não houver ônibus, usa avião e avisa)
   - carro   : carro alugado na viagem toda (diárias + taxas + combustível + pedágios + estacionamento)
+              ou, se houver "carro_proprio" nas cotações, carro próprio (combustível + pedágios + estacionamento)
   - misto   : em cada trecho, o mais barato entre avião e ônibus
 
 Cenários de hospedagem:
@@ -49,11 +50,11 @@ def custo_carro(trechos: list[dict], aluguel: dict) -> dict:
     faltando = [t["id"] for t in trechos if "carro" not in t]
     if faltando:
         raise ErroCotacao(f"Trechos sem dados de carro: {', '.join(faltando)}")
-    dias = int(aluguel["dias"])
+    dias = int(aluguel.get("dias", 0))
     km = sum(float(t["carro"]["distancia_km"]) for t in trechos)
     litros = km / float(aluguel["consumo_km_l"])
     partes = {
-        "aluguel": float(aluguel["diaria"]) * dias + float(aluguel.get("taxas", 0)),
+        "aluguel": float(aluguel.get("diaria", 0)) * dias + float(aluguel.get("taxas", 0)),
         "combustível": litros * float(aluguel["preco_combustivel"]),
         "pedágios": sum(float(t["carro"].get("pedagio", 0)) for t in trechos),
         "estacionamento": float(aluguel.get("estacionamento_dia", 0)) * dias,
@@ -113,10 +114,16 @@ def cenario_hospedagem(nome: str, estadias: list[dict]) -> dict:
 def calcular(cot: dict) -> dict:
     viajantes = int(cot.get("viajantes", 1))
     trechos, estadias = cot.get("trechos", []), cot.get("estadias", [])
+    proprio = cot.get("carro_proprio")
     aluguel = cot.get("aluguel_carro")
+    if proprio:  # carro próprio: mesmo cálculo, sem diárias
+        aluguel = {**proprio, "diaria": 0, "taxas": 0}
 
     transportes, indisponiveis = {}, {}
+    tem_publico = any(m in t for t in trechos for m in MODAIS_PUBLICOS)
     for nome in NOMES_TRANSPORTE:
+        if nome != "carro" and not tem_publico:
+            continue  # nenhuma cotação de avião/ônibus (ex.: viagem só de carro próprio)
         try:
             transportes[nome] = cenario_transporte(nome, trechos, viajantes, aluguel)
         except (ErroCotacao, KeyError) as e:
@@ -124,7 +131,13 @@ def calcular(cot: dict) -> dict:
     misto = transportes.get("misto")
     if misto and any(transportes[n]["escolhas"] == misto["escolhas"] for n in MODAIS_PUBLICOS if n in transportes):
         del transportes["misto"]  # idêntico a avião ou ônibus: não repetir nas tabelas
-    hospedagens = {n: cenario_hospedagem(n, estadias) for n in NOMES_HOSPEDAGEM}
+    hospedagens = {}
+    for n in NOMES_HOSPEDAGEM:
+        if n != "mais_barato" and not any(n in e for e in estadias):
+            continue  # plataforma sem nenhuma cotação: não vira cenário
+        hospedagens[n] = cenario_hospedagem(n, estadias)
+    if list(hospedagens) == ["mais_barato"] or len(hospedagens) == 2:
+        hospedagens.pop("mais_barato", None)  # só uma plataforma: "mais barato" seria repetição
 
     combinacoes = []
     for nt, t in transportes.items():
@@ -137,6 +150,7 @@ def calcular(cot: dict) -> dict:
             })
     combinacoes.sort(key=lambda c: c["total"])
     return {
+        "carro_proprio": bool(proprio),
         "viajantes": viajantes,
         "transporte": transportes,
         "transporte_indisponivel": indisponiveis,
@@ -156,16 +170,19 @@ def horas(h: float) -> str:
 
 def markdown(r: dict) -> str:
     v = r["viajantes"]
+    nomes_t = dict(NOMES_TRANSPORTE)
+    if r.get("carro_proprio"):
+        nomes_t["carro"] = "Carro próprio"
     linhas = [f"## Comparativo de cenários ({v} viajante{'s' if v > 1 else ''})", ""]
 
     linhas += ["### Transporte", "", "| Cenário | Total | Por pessoa | Horas em deslocamento |", "|---|---:|---:|---:|"]
     for n, t in sorted(r["transporte"].items(), key=lambda kv: kv[1]["total"]):
-        linhas.append(f"| {NOMES_TRANSPORTE[n]} | {brl(t['total'])} | {brl(t['total'] / v)} | {horas(t['horas'])} |")
+        linhas.append(f"| {nomes_t[n]} | {brl(t['total'])} | {brl(t['total'] / v)} | {horas(t['horas'])} |")
     for n, motivo in r["transporte_indisponivel"].items():
-        linhas.append(f"| {NOMES_TRANSPORTE[n]} | indisponível | — | — |")
+        linhas.append(f"| {nomes_t[n]} | indisponível | — | — |")
     if "carro" in r["transporte"]:
-        d = r["transporte"]["carro"]["detalhe"]
-        linhas += ["", "Carro alugado: " + ", ".join(f"{k} {brl(x)}" for k, x in d.items())
+        d = {k: x for k, x in r["transporte"]["carro"]["detalhe"].items() if x}
+        linhas += ["", nomes_t["carro"] + ": " + ", ".join(f"{k} {brl(x)}" for k, x in d.items())
                    + f" ({r['transporte']['carro']['km']:.0f} km)."]
 
     linhas += ["", "### Hospedagem", "", "| Cenário | Total | Por pessoa |", "|---|---:|---:|"]
@@ -177,13 +194,13 @@ def markdown(r: dict) -> str:
                "|---:|---|---|---:|---:|---:|"]
     for i, c in enumerate(r["combinacoes"], 1):
         linhas.append(
-            f"| {i} | {NOMES_TRANSPORTE[c['transporte']]} | {NOMES_HOSPEDAGEM[c['hospedagem']]} | "
+            f"| {i} | {nomes_t[c['transporte']]} | {NOMES_HOSPEDAGEM[c['hospedagem']]} | "
             f"{brl(c['total'])} | {brl(c['por_pessoa'])} | {horas(c['horas_deslocamento'])} |"
         )
 
     avisos = [a for t in r["transporte"].values() for a in t["avisos"]]
     avisos += [a for h in r["hospedagem"].values() for a in h["avisos"]]
-    avisos += [f"{NOMES_TRANSPORTE[n]} indisponível: {m}" for n, m in r["transporte_indisponivel"].items()]
+    avisos += [f"{nomes_t[n]} indisponível: {m}" for n, m in r["transporte_indisponivel"].items()]
     if avisos:
         linhas += ["", "### Avisos", ""] + [f"- {a}" for a in dict.fromkeys(avisos)]
     return "\n".join(linhas) + "\n"
